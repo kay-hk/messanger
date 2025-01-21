@@ -1,0 +1,3 @@
+FROM,FNUMBER,TO,TNUMBER,MESSAGE
+Bob,999,Bob,3333,Hello Bob
+Bob,999,Bob,3333,Good bye

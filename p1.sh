@@ -106,7 +106,19 @@ viewMessages() {
     if grep -iq "$contact" "$contacts"; then
         echo "Conversation with $contact:"
         echo "----------------"
+	read -r -p "Do you want to see the most recent message :1 or the whole chat:2 " ch
+	case $ch in
+	1)
+		 tac "$messages" | awk -F',' -v contact="$contact" '
+		 {
+			  if (($1 == contact || $2 == contact) || ($3 == contact || $4 == contact)) {
+				  print "From: " $1 " (" $2 ") To: " $3 " (" $4 ") - " $5
+				  exit  # Stop after the first match
+				}
+		}'
+		;;
 
+	2)
         tac "$messages" | grep -i "$contact" | awk -F',' -v contact="$contact" '
         {
             if ($1 == contact || $2 == contact) {
@@ -115,6 +127,10 @@ viewMessages() {
                 print "From: " $1 " (" $2 ") To: " $3 " (" $4 ") - " $5
             }
         }'
+	;;
+	*) echo "Invalid choice"
+	;;
+esac
     else
         echo "Invalid contact"
     fi
