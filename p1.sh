@@ -2,6 +2,7 @@
 
 owner="owner.txt"
 contacts="contacts.txt"
+messages="messages.txt"
 
 changeOwner() {
     echo "Current owner: $curro"
@@ -27,7 +28,7 @@ addContact() {
     fi
 }
 
-displayContacts() {
+viewContacts() {
     if [ ! -f $contacts ]; then
         echo "Contacts do not exist." 
     else
@@ -86,6 +87,38 @@ searchContacts() {
         fi
 }
 
+sendMessages() {
+    read -r -p "To (name or number): " search
+    if grep -i -q "^$search," "$contacts" || grep -i -q ",$search$" "$contacts"; then
+        contact=$(grep -i "^$search," "$contacts" || grep -i ",$search$" "$contacts")
+        echo "Found Contact: $contact"
+        read -p "Message content: " msg
+        echo "$curro,$contact,$msg" >> $messages
+        echo "Message sent to $contact."
+    else
+        echo "No contact found with the name or number '$search'."
+    fi
+}
+
+viewMessages() {
+    read -r -p "Contact (name or number): " contact
+ 
+    if grep -iq "$contact" $contacts; then
+        echo "Conversation with $contact:"
+        echo "----------------"
+        grep -i "$contact" "$messages" | awk -F',' -v contact="$contact" '
+        {
+            if ($1 == contact || $2 == contact) {
+                print "From: " $1 " (" $2 ") To: " $3 " (" $4 ") - " $5
+            } else if ($3 == contact || $4 == contact) {
+                print "From: " $1 " (" $2 ") To: " $3 " (" $4 ") - " $5
+            }
+        }'
+    else
+        echo "Invalid contact"
+    fi
+}
+
 while true; do
     if [ ! -f $contacts ]; then
         touch $contacts
@@ -96,17 +129,21 @@ while true; do
         read -p "Please enter your mobile number: " onum
         echo "$oname,$onum" > $owner
     fi
+    if [ ! -f $messages ]; then
+        touch $messages
+        echo "FROM,FNUMBER,TO,TNUMBER,MESSAGE" > $messages
+    fi
     curro=$(tail -n 1 "$owner")
-    read -r -p "1. Change owner 2. Add Contacts 3. Display Contacts 4. Delete Contacts 5. Update Contacts 6. Search Contacts 7. Send Messages 8. Receive/View Messages 9. Exit: " ch 
+    read -r -p "1. Change owner 2. Add Contacts 3. View Contacts 4. Delete Contacts 5. Update Contacts 6. Search Contacts 7. Send Messages 8. View Messages 9. Exit: " ch 
     case $ch in 
         1) changeOwner ;;
         2) addContact ;;
-        3) displayContacts ;;
+        3) viewContacts ;;
         4) deleteContact ;; 
         5) updateContact ;;
         6) searchContacts ;;
         7) sendMessages ;;
-        8) recviewMessages ;;
+        8) viewMessages ;;
         9) break ;;
         *) echo "Invalid choice. Please choose again." ;;
     esac
