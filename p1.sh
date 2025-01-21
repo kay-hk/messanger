@@ -102,11 +102,12 @@ sendMessages() {
 
 viewMessages() {
     read -r -p "Contact (name or number): " contact
- 
-    if grep -iq "$contact" $contacts; then
+
+    if grep -iq "$contact" "$contacts"; then
         echo "Conversation with $contact:"
         echo "----------------"
-        grep -i "$contact" "$messages" | awk -F',' -v contact="$contact" '
+
+        tac "$messages" | grep -i "$contact" | awk -F',' -v contact="$contact" '
         {
             if ($1 == contact || $2 == contact) {
                 print "From: " $1 " (" $2 ") To: " $3 " (" $4 ") - " $5
