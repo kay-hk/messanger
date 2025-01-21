@@ -1,8 +1,6 @@
-# messange
-
-Messanger Group Project
-by Kay & Adam
-Program is made to:
--Enter as and change user
--Add, Display, Delete, Update and search contacts
--Send, Recieve and Dispaly messages
+# Messanger Group Project
+## By Kay & Adam
+### Overview: 
+The program functions as a mini messanger. It is designed to: 
+- Add, View, Delete, Update and Search Contacts
+- Send, Receive and View Messages
